@@ -444,6 +444,12 @@ namespace Dml
     {
         ORT_TRY
         {
+
+        if (m_allocator)
+        {
+            m_context->SetAllocator(m_allocator);
+        }
+
         assert(!m_closed);
 
         DML_BINDING_DESC persistentResourceBindingDesc =
