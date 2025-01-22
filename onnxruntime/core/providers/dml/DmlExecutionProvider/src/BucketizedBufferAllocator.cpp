@@ -85,10 +85,14 @@ namespace Dml
         return Alloc(size, m_defaultRoundingMode);
     }
 
-    void BucketizedBufferAllocator::ReleaseDynamicResources() {
-        for (auto& bucket : m_pool) {
-            if (bucket.resources.empty() == false) {
-                for (auto& resource : bucket.resources) {
+    void BucketizedBufferAllocator::ReleaseDynamicResources()
+    {
+        for (auto& bucket : m_pool)
+        {
+            if (bucket.resources.empty() == false)
+            {
+                for (auto& resource : bucket.resources)
+                {
                     resource.resource = nullptr;
                 }
             }

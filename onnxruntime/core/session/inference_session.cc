@@ -2635,7 +2635,8 @@ Status InferenceSession::Run(const RunOptions& run_options,
         std::string config_value = session_options_.config_options.GetConfigOrDefault("release_dynamic_resources", "0");
         bool releaseDynamicResources = config_value == "true" || config_value == "1";
         
-        if (releaseDynamicResources) {
+        if (releaseDynamicResources)
+        {
             auto pDevice = session_state_->GetExecutionProviders().Get(onnxruntime::kDmlExecutionProvider)->GetOrtDeviceByMemType(OrtMemTypeDefault);
             auto allocator = session_state_->GetAllocator(pDevice);
             allocator->ReleaseDynamicResources();
