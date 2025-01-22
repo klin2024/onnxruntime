@@ -85,6 +85,22 @@ namespace Dml
         return Alloc(size, m_defaultRoundingMode);
     }
 
+    void BucketizedBufferAllocator::ReleaseDynamicResources()
+    {
+        for (auto& bucket : m_pool)
+        {
+            if (bucket.resources.empty() == false)
+            {
+                for (auto& resource : bucket.resources)
+                {
+                    resource.resource = nullptr;
+                }
+            }
+            bucket.resources.clear();
+        }
+        m_pool.clear();
+    }
+
     void* BucketizedBufferAllocator::Alloc(size_t size, AllocatorRoundingMode roundingMode)
     {
         // For some reason lotus likes requesting 0 bytes of memory
@@ -174,7 +190,7 @@ namespace Dml
 
         // Free the resource to the pool if its size matches a bucket size
         gsl::index bucketIndex = GetBucketIndexFromSize(allocInfo->GetRequestedSize());
-        if (GetBucketSizeFromIndex(bucketIndex) == allocInfo->GetResource()->GetDesc().Width)
+        if (m_pool.size() > 0 && GetBucketSizeFromIndex(bucketIndex) == allocInfo->GetResource()->GetDesc().Width)
         {
             assert(gsl::narrow_cast<gsl::index>(m_pool.size()) > bucketIndex);
 
