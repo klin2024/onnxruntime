@@ -55,6 +55,7 @@ namespace Dml
         void* Alloc(size_t size, AllocatorRoundingMode roundingMode);
         void* Alloc(size_t size) final;
         void Free(void* p) final;
+        void ReleaseDynamicResources() override;
 
     private:
         static const uint32_t c_minResourceSizeExponent = 16; // 2^16 = 64KB
