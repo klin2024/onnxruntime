@@ -2630,6 +2630,17 @@ Status InferenceSession::Run(const RunOptions& run_options,
                                      device_stream_collection_holder,
 #endif
                                      run_logger);
+
+        // handle release_dynamic_resources
+        std::string config_value = session_options_.config_options.GetConfigOrDefault("release_dynamic_resources", "0");
+        bool releaseDynamicResources = config_value == "true" || config_value == "1";
+        
+        if (releaseDynamicResources)
+        {
+            auto pDevice = session_state_->GetExecutionProviders().Get(onnxruntime::kDmlExecutionProvider)->GetOrtDeviceByMemType(OrtMemTypeDefault);
+            auto allocator = session_state_->GetAllocator(pDevice);
+            allocator->ReleaseDynamicResources();
+        }
       }
 
       // info all execution providers InferenceSession:Run ended
