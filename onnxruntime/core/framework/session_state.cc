@@ -122,6 +122,22 @@ void SessionState::UpdateAllocatorsWithEnvAllocators(const std::vector<Allocator
   }
 }
 
+void SessionState::ReleaseDynamicResources() const {
+  std::string config_value = GetSessionOptions().config_options.GetConfigOrDefault("release_dynamic_resources", "0");
+  bool releaseDynamicResources = (config_value == "true") || (config_value == "1");
+  
+  if (releaseDynamicResources) {
+    auto pDmlEp = GetExecutionProviders().Get(onnxruntime::kDmlExecutionProvider);
+    if (pDmlEp != nullptr) {
+      auto pDevice = pDmlEp->GetOrtDeviceByMemType(OrtMemTypeDefault);
+      auto allocator = GetAllocator(pDevice);
+      if (allocator != nullptr) {
+        allocator->ReleaseDynamicResources();
+      }
+    }
+  }
+}
+
 void SessionState::CreateGraphInfo() {
   graph_viewer_.emplace(graph_);
   // use graph_viewer_ to initialize ort_value_name_idx_map_

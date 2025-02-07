@@ -138,6 +138,8 @@ class SessionState {
 
   void UpdateAllocatorsWithEnvAllocators(const std::vector<AllocatorPtr>&);
 
+  void ReleaseDynamicResources() const;
+
   const OrtValueNameIdxMap& GetOrtValueNameIdxMap() const noexcept { return ort_value_name_idx_map_; }
 
   /**
