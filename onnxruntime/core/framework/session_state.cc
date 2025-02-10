@@ -122,7 +122,7 @@ void SessionState::UpdateAllocatorsWithEnvAllocators(const std::vector<Allocator
   }
 }
 
-void SessionState::ReleaseDynamicResources() const {
+void SessionState::TryReleaseDynamicResources() const {
   std::string config_value = GetSessionOptions().config_options.GetConfigOrDefault("release_dynamic_resources", "0");
   bool releaseDynamicResources = (config_value == "true") || (config_value == "1");
   

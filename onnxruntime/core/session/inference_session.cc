@@ -2817,7 +2817,7 @@ common::Status InferenceSession::Run(const NameMLValMap& feeds, gsl::span<const 
                                      std::vector<OrtValue>* p_fetches) {
   common::Status result = Run(RunOptions(), feeds, output_names, p_fetches);
   if (result.IsOK()) {
-    this->session_state_->ReleaseDynamicResources();
+    this->session_state_->TryReleaseDynamicResources();
   }
 
   return result;

@@ -76,7 +76,7 @@ common::Status IOBinding::SynchronizeInputs() {
 common::Status IOBinding::SynchronizeOutputs() {
   ORT_RETURN_IF_ERROR(SyncProviders(session_state_.GetOutputNodeInfoMap(), session_state_));
 
-  session_state_.ReleaseDynamicResources();
+  session_state_.TryReleaseDynamicResources();
 
   return Status::OK();
 }
