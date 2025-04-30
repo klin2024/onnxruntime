@@ -2709,17 +2709,6 @@ Status InferenceSession::Run(const RunOptions& run_options,
                                      device_stream_collection_holder,
 #endif
                                      run_logger);
-
-        // handle release_dynamic_resources
-        std::string config_value = session_options_.config_options.GetConfigOrDefault("release_dynamic_resources", "0");
-        bool releaseDynamicResources = config_value == "true" || config_value == "1";
-
-        if (releaseDynamicResources)
-        {
-            auto pDevice = session_state_->GetExecutionProviders().Get(onnxruntime::kDmlExecutionProvider)->GetOrtDeviceByMemType(OrtMemTypeDefault);
-            auto allocator = session_state_->GetAllocator(pDevice);
-            allocator->ReleaseDynamicResources();
-        }
       }
 
       // info all execution providers InferenceSession:Run ended
@@ -2913,7 +2902,12 @@ common::Status InferenceSession::RunAsync(const RunOptions* run_options,
 
 common::Status InferenceSession::Run(const NameMLValMap& feeds, gsl::span<const std::string> output_names,
                                      std::vector<OrtValue>* p_fetches) {
-  return Run(RunOptions(), feeds, output_names, p_fetches);
+  common::Status result = Run(RunOptions(), feeds, output_names, p_fetches);
+  if (result.IsOK()) {
+    this->session_state_->TryReleaseDynamicResources();
+  }
+
+  return result;
 }
 
 common::Status InferenceSession::Run(const RunOptions& run_options, const NameMLValMap& feeds_map,

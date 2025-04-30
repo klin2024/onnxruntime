@@ -123,6 +123,22 @@ void SessionState::UpdateAllocatorsWithEnvAllocators(const std::vector<Allocator
   }
 }
 
+void SessionState::TryReleaseDynamicResources() const {
+  std::string config_value = GetSessionOptions().config_options.GetConfigOrDefault("release_dynamic_resources", "0");
+  bool releaseDynamicResources = (config_value == "true") || (config_value == "1");
+
+  if (releaseDynamicResources) {
+    auto pDmlEp = GetExecutionProviders().Get(onnxruntime::kDmlExecutionProvider);
+    if (pDmlEp != nullptr) {
+      auto pDevice = pDmlEp->GetOrtDeviceByMemType(OrtMemTypeDefault);
+      auto allocator = GetAllocator(pDevice);
+      if (allocator != nullptr) {
+        allocator->ReleaseDynamicResources();
+      }
+    }
+  }
+}
+
 void SessionState::CreateGraphInfo(bool save_prepacked_on) {
   graph_.ConstructPrepackedSharedContainerAndSetMode(save_prepacked_on);
 
