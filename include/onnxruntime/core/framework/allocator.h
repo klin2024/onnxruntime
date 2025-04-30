@@ -88,6 +88,8 @@ class IAllocator {
    */
   virtual void Free(void* p) = 0;
 
+  virtual void ReleaseDynamicResources() {};
+
   // Reserve() is an interface exposed for an implementation of IAllocator
   // to optionally implement some allocation logic that by-passes any arena-based
   // logic that may be housed in the Alloc() implementation.
