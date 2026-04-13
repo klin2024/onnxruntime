@@ -3281,7 +3281,12 @@ common::Status InferenceSession::RunAsync(const RunOptions* run_options,
 
 common::Status InferenceSession::Run(const NameMLValMap& feeds, gsl::span<const std::string> output_names,
                                      std::vector<OrtValue>* p_fetches) {
-  return Run(RunOptions(), feeds, output_names, p_fetches);
+  common::Status result = Run(RunOptions(), feeds, output_names, p_fetches);
+  if (result.IsOK()) {
+    this->session_state_->TryReleaseDynamicResources();
+  }
+
+  return result;
 }
 
 common::Status InferenceSession::Run(const RunOptions& run_options, const NameMLValMap& feeds_map,
